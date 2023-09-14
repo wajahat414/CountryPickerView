@@ -33,9 +33,11 @@ public class CountryPickerViewController: UITableViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
         
+        
         prepareTableItems()
         prepareNavItem()
         prepareSearchBar()
+        self.view.backgroundColor = .black
     }
    
 }
@@ -73,7 +75,15 @@ extension CountryPickerViewController {
     }
     
     func prepareNavItem() {
-        navigationItem.title = dataSource.navigationTitle
+//        navigationItem.title = dataSource.navigationTitle
+        navigationItem.title = "Choose a Country"
+        
+        let titleColor = UIColor.white // Replace with your desired color
+
+        // Set the title text attributes for the navigation bar of the current view controller
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: titleColor]
+        self.navigationController?.navigationBar.backgroundColor = .black
+        self.navigationController?.navigationBar.barTintColor = .black
 
         // Add a close button if this is the root view controller
         if navigationController?.viewControllers.count == 1 {
@@ -96,7 +106,28 @@ extension CountryPickerViewController {
         searchController?.definesPresentationContext = true
         searchController?.searchBar.delegate = self
         searchController?.delegate = self
-
+        searchController?.searchBar.barTintColor = .darkGray
+       
+//          searchController?.searchBar.tintColor = .lightGray
+        if let textFieldInsideSearchBar = searchController?.searchBar.value(forKey: "searchField") as? UITextField {
+            textFieldInsideSearchBar.textColor = .white  // Change to your desired color
+            textFieldInsideSearchBar.backgroundColor = .black
+            textFieldInsideSearchBar.leftView?.tintColor = .gray
+            textFieldInsideSearchBar.clearButtonMode = .always
+            
+            textFieldInsideSearchBar.tintColor = .gray
+            let placeholderAttributes = [NSAttributedString.Key.foregroundColor: UIColor.gray]  // Change to your desired color
+            textFieldInsideSearchBar.attributedPlaceholder = NSAttributedString(string: "Search", attributes: placeholderAttributes)
+            
+            if let clearButton = textFieldInsideSearchBar.value(forKey: "_clearButton") as? UIButton {
+                 let templateImage = clearButton.imageView?.image?.withRenderingMode(.alwaysTemplate)
+                 clearButton.setImage(templateImage, for: .normal)
+                 clearButton.tintColor = .gray
+             }
+      
+        }
+          // Set the background color of the search controller's view to grey
+       
         switch searchBarPosition {
         case .tableViewHeader: tableView.tableHeaderView = searchController?.searchBar
         case .navigationBar: navigationItem.titleView = searchController?.searchBar
@@ -122,6 +153,7 @@ extension CountryPickerViewController {
     
     override public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifier = String(describing: CountryTableViewCell.self)
+        tableView.separatorColor = .lightGray
         
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier) as? CountryTableViewCell
             ?? CountryTableViewCell(style: .default, reuseIdentifier: identifier)
@@ -149,9 +181,12 @@ extension CountryPickerViewController {
         if let color = dataSource.cellLabelColor {
             cell.textLabel?.textColor = color
         }
+        cell.textLabel?.textColor = .lightText
         cell.accessoryType = country == countryPickerView.selectedCountry &&
             dataSource.showCheckmarkInList ? .checkmark : .none
         cell.separatorInset = .zero
+        cell.backgroundColor = .black
+    
         return cell
     }
     
@@ -173,6 +208,9 @@ extension CountryPickerViewController {
     override public func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
         return sectionsTitles.firstIndex(of: title)!
     }
+
+    
+ 
 }
 
 //MARK:- UITableViewDelegate
@@ -184,6 +222,7 @@ extension CountryPickerViewController {
             if let color = dataSource.sectionTitleLabelColor {
                 header.textLabel?.textColor = color
             }
+            header.contentView.backgroundColor = .black.withAlphaComponent(0.5)
         }
     }
     
@@ -283,6 +322,7 @@ class CountryPickerViewDataSourceInternal: CountryPickerViewDataSource {
     
     init(view: CountryPickerView) {
         self.view = view
+        
     }
     
     var preferredCountries: [Country] {
@@ -302,7 +342,8 @@ class CountryPickerViewDataSourceInternal: CountryPickerViewDataSource {
     }
 
     var sectionTitleLabelColor: UIColor? {
-        return view.dataSource?.sectionTitleLabelColor(in: view)
+//        return view.dataSource?.sectionTitleLabelColor(in: view)
+        return .white
     }
     
     var cellLabelFont: UIFont {
@@ -310,7 +351,8 @@ class CountryPickerViewDataSourceInternal: CountryPickerViewDataSource {
     }
     
     var cellLabelColor: UIColor? {
-        return view.dataSource?.cellLabelColor(in: view)
+//        return view.dataSource?.cellLabelColor(in: view)
+        return .white
     }
     
     var cellImageViewSize: CGSize {
@@ -323,6 +365,7 @@ class CountryPickerViewDataSourceInternal: CountryPickerViewDataSource {
     
     var navigationTitle: String? {
         return view.dataSource?.navigationTitle(in: view)
+        return "Pick your Country"
     }
     
     var closeButtonNavigationItem: UIBarButtonItem {

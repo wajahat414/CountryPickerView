@@ -14,7 +14,7 @@ public enum SearchBarPosition {
     case tableViewHeader, navigationBar, hidden
 }
 
-public struct Country: Equatable {
+ public struct Country: Equatable {
     public let name: String
     public let code: String
     public let phoneCode: String
@@ -36,7 +36,7 @@ public func !=(lhs: Country, rhs: Country) -> Bool {
 }
 
 
-public class CountryPickerView: NibView {
+@objc public class CountryPickerView: NibView {
     @IBOutlet weak var spacingConstraint: NSLayoutConstraint!
     @IBOutlet public weak var flagImageView: UIImageView! {
         didSet {
@@ -94,11 +94,11 @@ public class CountryPickerView: NibView {
     }
     
     weak public var dataSource: CountryPickerViewDataSource?
-    weak public var delegate: CountryPickerViewDelegate?
+   @objc  weak public var delegate: CountryPickerViewDelegate?
     weak public var hostViewController: UIViewController?
     
     fileprivate var _selectedCountry: Country?
-    internal(set) public var selectedCountry: Country {
+   internal(set) public var selectedCountry: Country {
         get {
             return _selectedCountry
                 ?? usableCountries.first(where: { $0.code == Locale.current.regionCode })
@@ -106,7 +106,7 @@ public class CountryPickerView: NibView {
         }
         set {
             _selectedCountry = newValue
-            delegate?.countryPickerView(self, didSelectCountry: newValue)
+            delegate?.countryPickerView(self, didSelectCountry: newValue.name)
             setup()
         }
     }
@@ -153,7 +153,7 @@ public class CountryPickerView: NibView {
         }
     }
     
-    public func showCountriesList(from viewController: UIViewController) {
+   @objc public func showCountriesList(from viewController: UIViewController) {
         let countryVc = CountryPickerViewController(style: .grouped)
         countryVc.countryPickerView = self
         if let viewController = viewController as? UINavigationController {
@@ -231,5 +231,8 @@ extension CountryPickerView {
     
     public func getCountryByCode(_ code: String) -> Country? {
         return countries.first(where: { $0.code == code })
+    }
+ @objc  public func getSelectedCountryName() -> String?{
+        return _selectedCountry?.name;
     }
 }
